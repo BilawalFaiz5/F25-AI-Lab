@@ -1,0 +1,107 @@
+============================================================
+LAB 4: INFORMED SEARCH — HEURISTICS & A*
+============================================================
+Graph: {'S': [('A', 1), ('B', 4)], 'A': [('C', 2)], 'B': [('G', 5)], 'C': [('G', 3)], 'G': []}
+Heuristic: {'S': 5, 'A': 4, 'B': 4, 'C': 2, 'G': 0}
+
+HEURISTIC AUDIT
+Node | h(n) | true remaining | admissible?
+   S |    5 |              6 | True
+   A |    4 |              5 | True
+   B |    4 |              5 | True
+   C |    2 |              3 | True
+   G |    0 |              0 | True
+
+Consistency checks: h(u) <= cost(u,v) + h(v)
+S->A: 5 <= 1 + 4 (5) -> True
+S->B: 5 <= 4 + 4 (8) -> True
+A->C: 4 <= 2 + 2 (4) -> True
+B->G: 4 <= 5 + 0 (5) -> True
+C->G: 2 <= 3 + 0 (3) -> True
+Admissible overall: True
+Consistent overall: True
+
+A* RESULT
+Path: S -> A -> C -> G
+Returned cost: 6
+Independently summed path cost: 6
+Processed trace (node, g, h, f):
+  ('S', 0, 5, 5)
+  ('A', 1, 4, 5)
+  ('C', 3, 2, 5)
+  ('G', 6, 0, 6)
+Expanded nodes (successors examined): ['S', 'A', 'C']
+Expansion count (goal excluded): 3
+Stale queue entries skipped: 0
+
+UCS (zero heuristic) RESULT
+Path: S -> A -> C -> G
+Returned cost: 6
+Independently summed path cost: 6
+Processed trace (node, g, h, f):
+  ('S', 0, 0, 0)
+  ('A', 1, 0, 1)
+  ('C', 3, 0, 3)
+  ('B', 4, 0, 4)
+  ('G', 6, 0, 6)
+Expanded nodes (successors examined): ['S', 'A', 'C', 'B']
+Expansion count (goal excluded): 4
+Stale queue entries skipped: 0
+
+CONTROLLED COMPARISON
+Algorithm | Path | Cost | Expanded nodes | Count
+A* | S -> A -> C -> G | 6 | ['S', 'A', 'C'] | 3
+UCS (zero heuristic) | S -> A -> C -> G | 6 | ['S', 'A', 'C', 'B'] | 4
+
+OVERESTIMATE EXPERIMENT: change only h(C) from 2 to 10
+Modified heuristic: {'S': 5, 'A': 4, 'B': 4, 'C': 10, 'G': 0}
+
+HEURISTIC AUDIT
+Node | h(n) | true remaining | admissible?
+   S |    5 |              6 | True
+   A |    4 |              5 | True
+   B |    4 |              5 | True
+   C |   10 |              3 | False
+   G |    0 |              0 | True
+
+Consistency checks: h(u) <= cost(u,v) + h(v)
+S->A: 5 <= 1 + 4 (5) -> True
+S->B: 5 <= 4 + 4 (8) -> True
+A->C: 4 <= 2 + 10 (12) -> True
+B->G: 4 <= 5 + 0 (5) -> True
+C->G: 10 <= 3 + 0 (3) -> False
+Admissible overall: False
+Consistent overall: False
+
+A* with h(C)=10 RESULT
+Path: S -> B -> G
+Returned cost: 9
+Independently summed path cost: 9
+Processed trace (node, g, h, f):
+  ('S', 0, 5, 5)
+  ('A', 1, 4, 5)
+  ('B', 4, 4, 8)
+  ('G', 9, 0, 9)
+Expanded nodes (successors examined): ['S', 'A', 'B']
+Expansion count (goal excluded): 3
+Stale queue entries skipped: 0
+
+INTERPRETATION
+The supplied heuristic is admissible and consistent on this graph.
+A* finds S -> A -> C -> G at cost 6.
+UCS uses h(n)=0 and returns an optimal path; its expansion count may differ.
+With h(C)=10, the heuristic overestimates C's true remaining cost of 3.
+The algorithm can choose the cost-9 route through B before exploring C,
+so this inadmissible heuristic can cause a suboptimal result.
+
+Program stderr:
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/spreadsheet_warmup.py", line 785, in warm_spreadsheet_runtime
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/spreadsheet_warmup.py", line 718, in _warm_feature_flows
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/spreadsheet_warmup.py", line 509, in _warm_drawing_and_image_flows
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/generated/interface/models.py", line 32861, in bring_to_front
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/rpc/remote.py", line 764, in __call__
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/rpc/client.py", line 175, in call
+artifact_tool.rpc.client.RemoteError: Element ordering requires an owning element collection.
